@@ -9,6 +9,6 @@ import lombok.Data;
  */
 @Data
 public class DexToolsV1 {
-    public final String priceChange24h;
-    public final String volume24hUSD;
+    public final Double priceChange24h;
+    public final Double volume24hUSD;
 }

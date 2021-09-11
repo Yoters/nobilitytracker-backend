@@ -9,5 +9,5 @@ import lombok.Data;
  */
 @Data
 public class DexToolsV2 {
-    public final String token_price_usd;
+    public final Double token_price_usd;
 }
