@@ -19,7 +19,7 @@ public class Main {
     public static void main (String[] args) throws IOException, InterruptedException {
         Main.SINGLETON = new Main();
         System.out.println(Data.getHolders());
-        Javalin app = Javalin.create(JavalinConfig::enableCorsForAllOrigins).start(6969);
+        Javalin app = Javalin.create().start(6969);
         app.get("/", Main::serveSupply);
         Main.SINGLETON.updateSupply();
     }
