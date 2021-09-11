@@ -18,7 +18,7 @@ public class Main {
         System.out.println(Data.getHolders());
         Javalin app = Javalin.create(javalinConfig -> {
             javalinConfig.enableCorsForAllOrigins();
-        }).start(3000);
+        }).start(6969);
         app.get("/", Main::serveSupply);
         Main.SINGLETON.updateSupply();
     }
