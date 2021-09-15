@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.patrity.model.DexToolsV1;
 import com.patrity.model.DexToolsV2;
+import com.patrity.model.lbank.LBank;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -52,6 +53,22 @@ public class Data {
 
         try (Response response = client.newCall(request).execute()) {
             return gb.fromJson(Objects.requireNonNull(response.body()).string(), DexToolsV2.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static LBank getLBankData() {
+        OkHttpClient client = new OkHttpClient();
+        Gson gb = new GsonBuilder().setPrettyPrinting().create();
+
+        Request request = new Request.Builder()
+                .url("https://api.lbkex.com/v2/ticker/24hr.do?symbol=nbl_usdt")
+                .build();
+
+        try (Response response = client.newCall(request).execute()) {
+            return gb.fromJson(Objects.requireNonNull(response.body()).string(), LBank.class);
         } catch (IOException e) {
             e.printStackTrace();
         }
