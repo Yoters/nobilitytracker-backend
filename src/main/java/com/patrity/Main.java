@@ -2,6 +2,7 @@ package com.patrity;
 
 import com.google.gson.GsonBuilder;
 import com.patrity.http.Data;
+import com.patrity.http.ReflectionHistory;
 import com.patrity.model.DexToolsV1;
 import com.patrity.model.DexToolsV2;
 import com.patrity.model.NobilityData;
@@ -11,18 +12,18 @@ import io.javalin.http.Context;
 
 import java.io.IOException;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class Main {
 
-    private static Main SINGLETON;
-    private static NobilityData nobilityData;
+    public static Main SINGLETON;
+    public static NobilityData nobilityData = new NobilityData("0", "0", 0.0, 0.0, 0.0, new LBank("0", new ArrayList<>(), 0, 0));
     private ExecutorService executorService = Executors.newFixedThreadPool(10);
 
     public static void main (String[] args) throws IOException, InterruptedException {
         Main.SINGLETON = new Main();
-
 
         nobilityData = SINGLETON.updateSupply();
 

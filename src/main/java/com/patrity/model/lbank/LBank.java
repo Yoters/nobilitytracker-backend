@@ -6,7 +6,6 @@ import lombok.Getter;
 import java.util.List;
 
 @Data
-@Getter
 public class LBank{
     public final String result;
     public final List<Datum> data;
