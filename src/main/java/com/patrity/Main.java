@@ -44,6 +44,7 @@ public class Main {
 
         Javalin app = Javalin.create().start(6969);
         app.get("/", Main::serveSupply);
+        app.get("/reflections", ReflectionHistory::getTotalReflections);
     }
 
     private void init() throws InterruptedException, IOException {
