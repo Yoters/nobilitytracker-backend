@@ -19,10 +19,16 @@ import java.util.concurrent.Executors;
 public class Main {
 
     public static Main SINGLETON;
-    public static NobilityData nobilityData = new NobilityData("0", "0", 0.0, 0.0, 0.0, new LBank("0", new ArrayList<>(), 0, 0));
+    public static NobilityData nobilityData = new NobilityData(
+            "0",
+            "0",
+            0.0,
+            0.0,
+            0.0,
+            new LBank("0",new ArrayList<>(), 0, 0));
     private ExecutorService executorService = Executors.newFixedThreadPool(10);
 
-    public static void main (String[] args) throws IOException, InterruptedException {
+    public static void main (String[] args) {
         Main.SINGLETON = new Main();
 
         nobilityData = SINGLETON.updateSupply();
@@ -30,9 +36,7 @@ public class Main {
         Main.SINGLETON.executorService.submit(() -> {
             try {
                 Main.SINGLETON.init();
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (InterruptedException e) {
+            } catch (IOException | InterruptedException e) {
                 e.printStackTrace();
             }
         });
@@ -49,7 +53,7 @@ public class Main {
         }
     }
 
-    private NobilityData updateSupply() throws IOException, InterruptedException {
+    private NobilityData updateSupply() {
         String supply = Data.getSupply();
         String holders = Data.getHolders();
         DexToolsV1 dexToolsV1 = Data.getV1Data();
@@ -57,7 +61,12 @@ public class Main {
         LBank lBank = Data.getLBankData();
         Timestamp timeStamp = new Timestamp(System.currentTimeMillis());
         System.out.println("Supply updated: " + timeStamp);
-        return new NobilityData(supply, holders, dexToolsV1.getPriceChange24h(), dexToolsV1.getVolume24hUSD(), dexToolsV2.getToken_price_usd(), lBank);
+        return new NobilityData(supply,
+                holders,
+                dexToolsV1 == null ? 0.0 : dexToolsV1.getPriceChange24h(),
+                dexToolsV1 == null ? 0.0 : dexToolsV1.getVolume24hUSD(),
+                dexToolsV2 == null ? 0.0 : dexToolsV2.getToken_price_usd(),
+                lBank);
     }
 
     private static void serveSupply(Context ctx) {
