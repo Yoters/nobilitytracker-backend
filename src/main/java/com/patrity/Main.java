@@ -3,16 +3,18 @@ package com.patrity;
 import com.google.gson.GsonBuilder;
 import com.patrity.http.Data;
 import com.patrity.http.ReflectionHistory;
-import com.patrity.model.DexToolsV1;
-import com.patrity.model.DexToolsV2;
 import com.patrity.model.NobilityData;
+import com.patrity.model.cmc.CoinMarketCap;
 import com.patrity.model.lbank.LBank;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -22,14 +24,21 @@ public class Main {
     public static NobilityData nobilityData = new NobilityData(
             "0",
             "0",
-            0.0,
-            0.0,
-            0.0,
+            new BigDecimal(0.0),
+            new BigDecimal(0.0),
+            new BigDecimal(0.0),
+            new BigDecimal(0.0),
+            new BigDecimal(0.0),
+            new BigDecimal(0.0),
+            new BigDecimal(0.0),
             new LBank("0",new ArrayList<>(), 0, 0));
+
+    public final Properties config = new Properties();
     private ExecutorService executorService = Executors.newFixedThreadPool(10);
 
     public static void main (String[] args) {
         Main.SINGLETON = new Main();
+        Main.SINGLETON.loadConfig();
 
         nobilityData = SINGLETON.updateSupply();
 
@@ -53,20 +62,30 @@ public class Main {
             Thread.sleep(30000L);
         }
     }
+    private void loadConfig() {
+        try (InputStream input = Main.class.getClassLoader().getResourceAsStream("config.properties")) {
+            config.load(input);
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }
 
     private NobilityData updateSupply() {
         String supply = Data.getSupply();
         String holders = Data.getHolders();
-        DexToolsV1 dexToolsV1 = Data.getV1Data();
-        DexToolsV2 dexToolsV2 = Data.getV2Data();
+        CoinMarketCap cmc = Data.getCmcData();
         LBank lBank = Data.getLBankData();
         Timestamp timeStamp = new Timestamp(System.currentTimeMillis());
         System.out.println("Supply updated: " + timeStamp);
         return new NobilityData(supply,
                 holders,
-                dexToolsV1 == null ? 0.0 : dexToolsV1.getPriceChange24h(),
-                dexToolsV1 == null ? 0.0 : dexToolsV1.getVolume24hUSD(),
-                dexToolsV2 == null ? 0.0 : dexToolsV2.getToken_price_usd(),
+                cmc == null ? new BigDecimal(0.0) : cmc.getData().get_11336().getQuote().getUSD().getPercent_change_24h(),
+                cmc == null ? new BigDecimal(0.0) : cmc.getData().get_11336().getQuote().getUSD().getPercent_change_7d(),
+                cmc == null ? new BigDecimal(0.0) : cmc.getData().get_11336().getQuote().getUSD().getPercent_change_30d(),
+                cmc == null ? new BigDecimal(0.0) : cmc.getData().get_11336().getQuote().getUSD().getPercent_change_60d(),
+                cmc == null ? new BigDecimal(0.0) : cmc.getData().get_11336().getQuote().getUSD().getPercent_change_90d(),
+                cmc == null ? new BigDecimal(0.0) : cmc.getData().get_11336().getQuote().getUSD().getVolume_24h(),
+                cmc == null ? new BigDecimal(0.0) : cmc.getData().get_11336().getQuote().getUSD().getPrice(),
                 lBank);
     }
 

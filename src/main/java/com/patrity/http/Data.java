@@ -3,8 +3,7 @@ package com.patrity.http;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.patrity.Main;
-import com.patrity.model.DexToolsV1;
-import com.patrity.model.DexToolsV2;
+import com.patrity.model.cmc.CoinMarketCap;
 import com.patrity.model.lbank.LBank;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -38,32 +37,17 @@ public class Data {
         }
     }
 
-    public static DexToolsV1 getV1Data() {
+    public static CoinMarketCap getCmcData() {
         OkHttpClient client = new OkHttpClient();
-        Gson gb = new GsonBuilder().setPrettyPrinting().create();
+        Gson gb = new GsonBuilder().setPrettyPrinting().setLenient().create();
 
         Request request = new Request.Builder()
-                .url("https://api.dex.guru/v1/tokens/0xa67a13c9283da5aabb199da54a9cb4cd8b9b16ba?network=bsc")
+                .url("https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest?id=11336")
+                .addHeader("X-CMC_PRO_API_KEY", Main.SINGLETON.config.getProperty("cmc-apikey"))
                 .build();
 
         try (Response response = client.newCall(request).execute()) {
-            return gb.fromJson(Objects.requireNonNull(response.body()).string(), DexToolsV1.class);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    public static DexToolsV2 getV2Data() {
-        OkHttpClient client = new OkHttpClient();
-        Gson gb = new GsonBuilder().setPrettyPrinting().create();
-
-        Request request = new Request.Builder()
-                .url("https://api.dex.guru/v2/tokens/0xa67a13c9283da5aabb199da54a9cb4cd8b9b16ba/price?amm=pancakeswap&network=bsc")
-                .build();
-
-        try (Response response = client.newCall(request).execute()) {
-            return gb.fromJson(Objects.requireNonNull(response.body()).string(), DexToolsV2.class);
+            return gb.fromJson(Objects.requireNonNull(response.body()).string(), CoinMarketCap.class);
         } catch (IOException e) {
             e.printStackTrace();
         }
